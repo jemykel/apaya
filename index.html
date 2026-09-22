@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #050204;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* tempat love */
+.heart {
+  position: relative;
+  width: 430px;
+  height: 390px;
+}
+
+/* setiap tulisan */
+.word {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(.7);
+  white-space: nowrap;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .3px;
+
+  opacity: 0;
+
+  animation: appear .55s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+/* MAROON */
+.word.maroon {
+  color: #741f35;
+  text-shadow:
+    0 0 4px rgba(116,31,53,.7),
+    0 0 9px rgba(116,31,53,.35);
+}
+
+/* PINK */
+.word.pink {
+  color: #ff7aa8;
+  text-shadow:
+    0 0 5px rgba(255,122,168,.9),
+    0 0 12px rgba(255,122,168,.4);
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.65);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* tulisan terakhir */
+.final {
+  margin-top: -15px;
+
+  color: #fff;
+  font-size: 19px;
+  letter-spacing: 1.5px;
+
+  opacity: 0;
+  transform: translateY(12px);
+
+  text-shadow:
+    0 0 8px rgba(255,122,168,.7),
+    0 0 18px rgba(116,31,53,.8);
+
+  transition:
+    opacity 1.4s ease,
+    transform 1.4s ease;
+}
+
+.final.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.final span {
+  color: #ff7aa8;
+  font-size: 24px;
+}
+
+
+/* biar aman di HP */
+@media (max-width: 600px) {
+  .heart {
+    transform: scale(.78);
+  }
+
+  .final {
+    margin-top: -65px;
+    font-size: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <div class="heart" id="heart"></div>
+
+  <div class="final" id="final">
+    i love you most bebe <span>♡</span>
+  </div>
+
+</div>
+
+
+<script>
+
+const heart = document.getElementById("heart");
+const finalText = document.getElementById("final");
+
+/*
+====================================================
+  WORD ART HEART
+====================================================
+
+Kita bikin grid kecil.
+
+Setiap posisi dicek:
+"apakah titik ini berada di dalam bentuk love?"
+
+Kalau iya → kasih tulisan "i love you".
+
+Jadi tulisan benar-benar memenuhi bentuk love,
+bukan cuma mengelilingi garis luarnya.
+*/
+
+const rows = 29;
+const cols = 37;
+
+let words = [];
+
+
+for (let row = 0; row < rows; row++) {
+
+  for (let col = 0; col < cols; col++) {
+
+    /*
+      ubah grid menjadi koordinat
+    */
+
+    let x =
+      (col / (cols - 1)) * 2.8 - 1.4;
+
+    let y =
+      (row / (rows - 1)) * 2.0 - 1.0;
+
+
+    /*
+      persamaan love
+    */
+
+    let value =
+      Math.pow(
+        x * x + y * y - 1,
+        3
+      )
+      -
+      x * x * Math.pow(y, 3);
+
+
+    /*
+      titik berada di dalam love
+    */
+
+    if (value <= 0) {
+
+      /*
+        sedikit variasi supaya
+        bentuknya tidak terlalu kotak
+      */
+
+      const px =
+        x * 145;
+
+      const py =
+        y * 155;
+
+
+      words.push({
+        x: px,
+        y: py,
+        row: row,
+        col: col
+      });
+    }
+  }
+}
+
+
+/*
+====================================================
+  URUTAN ANIMASI
+====================================================
+
+Bukan muncul random.
+
+Kita mulai dari bagian atas,
+kemudian perlahan turun dan memenuhi love.
+*/
+
+words.sort((a, b) => {
+
+  const da =
+    Math.abs(a.y + 150) +
+    Math.abs(a.x) * .15;
+
+  const db =
+    Math.abs(b.y + 150) +
+    Math.abs(b.x) * .15;
+
+  return da - db;
+});
+
+
+/*
+====================================================
+  BUAT TULISAN
+====================================================
+*/
+
+words.forEach((item, index) => {
+
+  const word =
+    document.createElement("div");
+
+  word.className = "word";
+
+  word.textContent = "i love you";
+
+
+  /*
+    campuran warna.
+
+    mayoritas maroon,
+    sebagian pink.
+  */
+
+  if (index % 7 === 0 || index % 13 === 0) {
+    word.classList.add("pink");
+  } else {
+    word.classList.add("maroon");
+  }
+
+
+  word.style.left =
+    `calc(50% + ${item.x}px)`;
+
+  word.style.top =
+    `calc(50% + ${item.y}px)`;
+
+
+  /*
+    muncul satu-satu.
+    0.055 detik = ringan tapi
+    tetap kelihatan runtut.
+  */
+
+  word.style.animationDelay =
+    `${index * 0.055}s`;
+
+
+  heart.appendChild(word);
+});
+
+
+/*
+====================================================
+  ENDING
+====================================================
+*/
+
+const animationTime =
+  words.length * 55 + 1200;
+
+
+setTimeout(() => {
+
+  finalText.classList.add("show");
+
+}, animationTime);
+
+</script>
+
+</body>
+</html>
