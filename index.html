@@ -16,93 +16,116 @@ body {
   overflow: hidden;
   background: #050204;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-family: Arial, sans-serif;
 }
 
 .wrapper {
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
-/* tempat love */
+/* =========================
+   LOVE
+========================= */
+
 .heart {
   position: relative;
-  width: 430px;
-  height: 390px;
+  width: 440px;
+  height: 380px;
 }
 
-/* setiap tulisan */
+/* tulisan i love you */
+
 .word {
   position: absolute;
-  transform: translate(-50%, -50%) scale(.7);
+
   white-space: nowrap;
 
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: .3px;
+  letter-spacing: 0.2px;
 
   opacity: 0;
 
-  animation: appear .55s cubic-bezier(.2,.8,.2,1) forwards;
+  transform:
+    translate(-50%, -50%)
+    scale(0.75);
+
+  animation:
+    appear 0.32s ease-out forwards;
 }
 
-/* MAROON */
-.word.maroon {
-  color: #741f35;
+/* deep maroon */
+
+.maroon {
+  color: #761f3a;
+
   text-shadow:
-    0 0 4px rgba(116,31,53,.7),
-    0 0 9px rgba(116,31,53,.35);
+    0 0 4px rgba(118, 31, 58, 0.7);
 }
 
-/* PINK */
-.word.pink {
-  color: #ff7aa8;
+/* pink */
+
+.pink {
+  color: #ff78a6;
+
   text-shadow:
-    0 0 5px rgba(255,122,168,.9),
-    0 0 12px rgba(255,122,168,.4);
+    0 0 5px rgba(255, 120, 166, 0.8),
+    0 0 10px rgba(255, 120, 166, 0.35);
 }
 
 @keyframes appear {
+
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(.65);
+    transform:
+      translate(-50%, -50%)
+      scale(0.65);
   }
 
   70% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.08);
+    transform:
+      translate(-50%, -50%)
+      scale(1.06);
   }
 
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform:
+      translate(-50%, -50%)
+      scale(1);
   }
+
 }
 
-/* tulisan terakhir */
-.final {
-  margin-top: -15px;
 
-  color: #fff;
+/* =========================
+   FINAL TEXT
+========================= */
+
+.final {
+  margin-top: -10px;
+
+  color: white;
+
   font-size: 19px;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.4px;
 
   opacity: 0;
-  transform: translateY(12px);
 
-  text-shadow:
-    0 0 8px rgba(255,122,168,.7),
-    0 0 18px rgba(116,31,53,.8);
+  transform: translateY(8px);
 
   transition:
-    opacity 1.4s ease,
-    transform 1.4s ease;
+    opacity 0.9s ease,
+    transform 0.9s ease;
+
+  text-shadow:
+    0 0 7px rgba(255, 120, 166, 0.65),
+    0 0 16px rgba(118, 31, 58, 0.7);
 }
 
 .final.show {
@@ -111,33 +134,48 @@ body {
 }
 
 .final span {
-  color: #ff7aa8;
-  font-size: 24px;
+  color: #ff78a6;
+  font-size: 23px;
 }
 
 
-/* biar aman di HP */
+/* =========================
+   HP
+========================= */
+
 @media (max-width: 600px) {
+
   .heart {
-    transform: scale(.78);
+    transform: scale(0.78);
   }
 
   .final {
     margin-top: -65px;
     font-size: 16px;
   }
+
 }
 </style>
 </head>
+
 
 <body>
 
 <div class="wrapper">
 
-  <div class="heart" id="heart"></div>
+  <div
+    class="heart"
+    id="heart">
+  </div>
 
-  <div class="final" id="final">
-    i love you most bebe <span>♡</span>
+
+  <div
+    class="final"
+    id="final">
+
+    i love you most bebe
+    <span>♡</span>
+
   </div>
 
 </div>
@@ -145,27 +183,21 @@ body {
 
 <script>
 
-const heart = document.getElementById("heart");
-const finalText = document.getElementById("final");
+const heart =
+  document.getElementById("heart");
+
+const finalText =
+  document.getElementById("final");
+
 
 /*
-====================================================
-  WORD ART HEART
-====================================================
-
-Kita bikin grid kecil.
-
-Setiap posisi dicek:
-"apakah titik ini berada di dalam bentuk love?"
-
-Kalau iya → kasih tulisan "i love you".
-
-Jadi tulisan benar-benar memenuhi bentuk love,
-bukan cuma mengelilingi garis luarnya.
+========================================
+MEMBUAT LOVE
+========================================
 */
 
-const rows = 29;
-const cols = 37;
+const rows = 25;
+const cols = 33;
 
 let words = [];
 
@@ -175,87 +207,104 @@ for (let row = 0; row < rows; row++) {
   for (let col = 0; col < cols; col++) {
 
     /*
-      ubah grid menjadi koordinat
+    Koordinat X
     */
 
-    let x =
+    const x =
       (col / (cols - 1)) * 2.8 - 1.4;
-
-    let y =
-      (row / (rows - 1)) * 2.0 - 1.0;
 
 
     /*
-      persamaan love
+    Koordinat Y
+
+    Dibalik supaya love
+    menghadap normal.
     */
 
-    let value =
+    const y =
+      1.0 -
+      (row / (rows - 1)) * 2.0;
+
+
+    /*
+    Rumus bentuk LOVE
+    */
+
+    const value =
       Math.pow(
         x * x + y * y - 1,
         3
       )
       -
-      x * x * Math.pow(y, 3);
+      x * x *
+      Math.pow(y, 3);
 
 
     /*
-      titik berada di dalam love
+    Kalau titik berada
+    DI DALAM love,
+    kasih tulisan.
     */
 
     if (value <= 0) {
 
-      /*
-        sedikit variasi supaya
-        bentuknya tidak terlalu kotak
-      */
-
-      const px =
-        x * 145;
-
-      const py =
-        y * 155;
-
-
       words.push({
-        x: px,
-        y: py,
+
+        x: x * 150,
+
+        y: -y * 155,
+
         row: row,
+
         col: col
+
       });
+
     }
+
   }
+
 }
 
 
 /*
-====================================================
-  URUTAN ANIMASI
-====================================================
+========================================
+URUTAN MUNCUL
+========================================
 
-Bukan muncul random.
-
-Kita mulai dari bagian atas,
-kemudian perlahan turun dan memenuhi love.
+Dari bagian atas love
+turun perlahan ke bawah.
 */
 
 words.sort((a, b) => {
 
-  const da =
-    Math.abs(a.y + 150) +
-    Math.abs(a.x) * .15;
+  /*
+  urut berdasarkan baris
+  */
 
-  const db =
-    Math.abs(b.y + 150) +
-    Math.abs(b.x) * .15;
+  if (a.row !== b.row) {
 
-  return da - db;
+    return a.row - b.row;
+
+  }
+
+  /*
+  bagian tengah sedikit
+  lebih dulu daripada ujung
+  */
+
+  return (
+    Math.abs(a.col - cols / 2) -
+    Math.abs(b.col - cols / 2)
+  );
+
 });
 
 
 /*
-====================================================
-  BUAT TULISAN
-====================================================
+========================================
+MASUKKAN "i love you"
+========================================
 */
 
 words.forEach((item, index) => {
@@ -263,61 +312,75 @@ words.forEach((item, index) => {
   const word =
     document.createElement("div");
 
+
   word.className = "word";
 
-  word.textContent = "i love you";
+
+  word.textContent =
+    "i love you";
 
 
   /*
-    campuran warna.
-
-    mayoritas maroon,
-    sebagian pink.
+  Campuran maroon + pink.
   */
 
-  if (index % 7 === 0 || index % 13 === 0) {
+  if (
+    index % 9 === 0 ||
+    index % 17 === 0
+  ) {
+
     word.classList.add("pink");
+
   } else {
+
     word.classList.add("maroon");
+
   }
 
 
+  /*
+  Posisi
+  */
+
   word.style.left =
     `calc(50% + ${item.x}px)`;
+
 
   word.style.top =
     `calc(50% + ${item.y}px)`;
 
 
   /*
-    muncul satu-satu.
-    0.055 detik = ringan tapi
-    tetap kelihatan runtut.
+  CEPAT.
+
+  Setiap tulisan cuma
+  berjarak 0.018 detik.
   */
 
   word.style.animationDelay =
-    `${index * 0.055}s`;
+    `${index * 0.018}s`;
 
 
   heart.appendChild(word);
+
 });
 
 
 /*
-====================================================
-  ENDING
-====================================================
+========================================
+TEKS TERAKHIR
+========================================
 */
 
-const animationTime =
-  words.length * 55 + 1200;
+const finishTime =
+  words.length * 18 + 700;
 
 
 setTimeout(() => {
 
   finalText.classList.add("show");
 
-}, animationTime);
+}, finishTime);
 
 </script>
 
